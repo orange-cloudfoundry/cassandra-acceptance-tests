@@ -1,0 +1,30 @@
+[submodule "vendor/golang.org/x/text"]
+	path = vendor/golang.org/x/text
+	url = https://github.com/golang/text.git
+[submodule "vendor/golang.org/x/net"]
+	path = vendor/golang.org/x/net
+	url = https://github.com/golang/net.git
+[submodule "vendor/github.com/onsi/gomega"]
+	path = vendor/github.com/onsi/gomega
+	url = https://github.com/onsi/gomega.git
+[submodule "vendor/github.com/onsi/ginkgo"]
+	path = vendor/github.com/onsi/ginkgo
+	url = https://github.com/onsi/ginkgo.git
+[submodule "vendor/gopkg.in/inf.v0"]
+	path = vendor/gopkg.in/inf.v0
+	url = https://github.com/go-inf/inf.git
+[submodule "vendor/github.com/hailocab/go-hostpool"]
+	path = vendor/github.com/hailocab/go-hostpool
+	url = https://github.com/hailocab/go-hostpool.git
+[submodule "vendor/github.com/golang/snappy"]
+	path = vendor/github.com/golang/snappy
+	url = https://github.com/golang/snappy.git
+[submodule "vendor/github.com/gocql/gocql"]
+	path = vendor/github.com/gocql/gocql
+	url = https://github.com/gocql/gocql.git
+[submodule "vendor/github.com/go.uuid"]
+	path = vendor/github.com/go.uuid
+	url = https://github.com/satori/go.uuid.git
+[submodule "vendor/github.com/satori/go.uuid"]
+	path = vendor/github.com/satori/go.uuid
+	url = https://github.com/satori/go.uuid.git

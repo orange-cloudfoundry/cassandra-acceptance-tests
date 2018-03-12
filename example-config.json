@@ -1,0 +1,13 @@
+{
+	"timeout_scale": 10,
+	"cluster_name": "cluster",
+	"cassandra_password": "xxxxxxxxxxx",
+	"cassandra_native_transport_port":  "9042",
+	"cassandra_seeds": ["127.0.0.1"],
+	"cassandra_servers": ["127.0.0.3","127.0.0.4"],
+	"client_encryption.enabled" : false,
+	"validate_ssl_TF": false,
+	"keyspace_replication_factor": 3,
+	"replication_strategy": "SimpleStrategy",
+	"durable_write": true
+}
