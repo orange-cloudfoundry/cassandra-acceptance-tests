@@ -3,10 +3,10 @@ package crud_tests
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"testing"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"os"
+	"testing"
 )
 
 type testConfig struct {

@@ -2,33 +2,30 @@ package crud_tests
 
 import (
 	"fmt"
-	"strings"
-	"time"
 	"github.com/gocql/gocql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/satori/go.uuid"
+	//"github.com/satori/go.uuid"
+	"time"
 )
 
-var _ = Describe("Cassandra CRUD tests", func() {
+var _ = Describe("MongoDB CRUD tests", func() {
 
 	var err error
-        uid, err := uuid.NewV4()
-	var differentiator = strings.Replace(uid.String(), "-", "_", -1)
 	var session *gocql.Session
 	var cluster *gocql.ClusterConfig
 	var clusterAdress = config.Seeds[0]
-	var nameNewUser = "newUser"  + differentiator
-	var pwdNewUser = "pwd"       + differentiator
-	var keyspaceName = "keyspacetest"  + differentiator
+	//var differentiator, err := uuid.NewV4().String()
+	var nameNewUser = "newUser" //+ differentiator
+	var pwdNewUser = "pwd"      //+ differentiator
+	var keyspaceName = "toto"   //+ differentiator
 	var authSuperUser = gocql.PasswordAuthenticator{"cassandra", config.CassPwd}
 	var authNewUser = gocql.PasswordAuthenticator{nameNewUser, pwdNewUser}
 	var strat = fmt.Sprintf("{ 'class' : '%s', 'replication_factor' : %d }", config.ReplStrat, config.RfFactor)
 	var createKeySpace = fmt.Sprintf("CREATE KEYSPACE IF NOT EXISTS %s WITH REPLICATION = %s AND DURABLE_WRITES = %t", keyspaceName, strat, config.DurableW)
 	var createUser = fmt.Sprintf("CREATE USER IF NOT EXISTS %s WITH PASSWORD '%s' SUPERUSER", nameNewUser, pwdNewUser)
-	var dropUser = "DROP USER IF EXISTS " + nameNewUser
+	var dropUser = "DROP USER IF EXISTS nameNewUser"
 	var dropKeySpace = "DROP KEYSPACE IF EXISTS " + keyspaceName
- 
 
 	BeforeEach(func() {
 
@@ -49,8 +46,10 @@ var _ = Describe("Cassandra CRUD tests", func() {
 		Expect(err).NotTo(HaveOccurred())
 		err = session.Query(createKeySpace).Exec()
 		if err != nil {
-			fmt.Println("failed to create new keyspace", err)
-		} 
+			fmt.Println("failed connexion to keyspace system", err)
+		} else {
+			fmt.Println("successful connexion to system")
+		}
 		Expect(err).NotTo(HaveOccurred())
 		session.Close()
 
@@ -58,11 +57,11 @@ var _ = Describe("Cassandra CRUD tests", func() {
 		cluster.Keyspace = keyspaceName
 		session, err = cluster.CreateSession()
 		if err != nil {
-			fmt.Println("failed to connect to new keyspace")
+			fmt.Println("failed creation keyspace")
 		}
 		Expect(err).NotTo(HaveOccurred())
 
-		By("creating a new standard user") //for the time being it s a superuser create a insert delete select role later
+		By("creating a new non-superuser, non-admin user") //for the time being it s a superuser create a insert delete select role later
 		err = session.Query(createUser).Exec()
 		Expect(err).NotTo(HaveOccurred())
 
@@ -73,7 +72,6 @@ var _ = Describe("Cassandra CRUD tests", func() {
 	AfterEach(func() {
 		By("connecting to the session as a superuser")
 		cluster.Authenticator = authSuperUser
-		cluster.Keyspace = "system"
 		session, err = cluster.CreateSession()
 		Expect(err).NotTo(HaveOccurred())
 
@@ -89,18 +87,17 @@ var _ = Describe("Cassandra CRUD tests", func() {
 		session.Close()
 	})
 	Context("When a user is created", func() {
-		var tableName = "tableName" + differentiator
-		var col1 = "col1"           + differentiator
-		var col2 = "col2"           + differentiator
-		var data1 = "data1"         + differentiator
-		var data2 = "data2"         + differentiator
-		var data3 = "data3"         + differentiator
+		var tableName = "tableName1" // + differentiator
+		var col1 = "col1"            //+ differentiator
+		var col2 = "col2"            //+ differentiator
+		var data1 = "data1"          //+ differentiator
+		var data2 = "data2"          //+ differentiator
+		var data3 = "data3"          //+ differentiator
 
 		BeforeEach(func() {
 
 			By("reconnecting to the session as the new user")
 			cluster.Authenticator = authNewUser
-			cluster.Keyspace = keyspaceName
 			session, err = cluster.CreateSession()
 			Expect(err).NotTo(HaveOccurred())
 		})
@@ -135,7 +132,6 @@ var _ = Describe("Cassandra CRUD tests", func() {
 			})
 
 			It("should find an existing document", func() {
-				By("showing data")
 				err = session.Query(showData).Exec()
 				Expect(err).NotTo(HaveOccurred())
 				iter := session.Query(showData).Iter()
@@ -148,7 +144,6 @@ var _ = Describe("Cassandra CRUD tests", func() {
 			})
 
 			It("should update an existing document", func() {
-				By("updating data")
 				err = session.Query(updateData).Exec()
 				Expect(err).NotTo(HaveOccurred())
 				err = session.Query(showData).Exec()
@@ -163,7 +158,7 @@ var _ = Describe("Cassandra CRUD tests", func() {
 			})
 
 			It("should delete an existing document", func() {
-				By("deleting data")
+				fmt.Println(deleteData)
 				err = session.Query(deleteData).Exec()
 				Expect(err).NotTo(HaveOccurred())
 				err = session.Query(showData).Exec()
