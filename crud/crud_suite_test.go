@@ -17,7 +17,6 @@ type testConfig struct {
 	Seeds                   []string `json:"cassandra_seeds"`
 	ClusterName             string   `json:"cluster_name"`
 	ClientEncryptionEnabled bool     `json:"client_encryption.enabled"`
-	Validate_SSL_TF         bool     `json:"validate_ssl_TF"`
 	RfFactor                int      `json:"keyspace_replication_factor"`
 	ReplStrat               string   `json:"replication_strategy"`
 	DurableW                bool     `json:"durable_write"`
