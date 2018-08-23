@@ -23,6 +23,8 @@ var _ = Describe("Cassandra CRUD tests", func() {
 	var keyspaceName = "keyspacetest"  + differentiator
 	var authSuperUser = gocql.PasswordAuthenticator{"cassandra", config.CassPwd}
 	var authNewUser = gocql.PasswordAuthenticator{nameNewUser, pwdNewUser}
+	var SslOpts = &gocql.SslOptions {}
+	SslOpts.CaPath = config.CaCertFile
 	var strat = fmt.Sprintf("{ 'class' : '%s', 'replication_factor' : %d }", config.ReplStrat, config.RfFactor)
 	var createKeySpace = fmt.Sprintf("CREATE KEYSPACE IF NOT EXISTS %s WITH REPLICATION = %s AND DURABLE_WRITES = %t", keyspaceName, strat, config.DurableW)
 	var createUser = fmt.Sprintf("CREATE USER IF NOT EXISTS %s WITH PASSWORD '%s' SUPERUSER", nameNewUser, pwdNewUser)
@@ -37,6 +39,11 @@ var _ = Describe("Cassandra CRUD tests", func() {
 
 		By("setting Authenticator as superuser")
 		cluster.Authenticator = authSuperUser
+
+		if (config.ClientEncryptionEnabled) {
+                        By("setting CA cert")
+                        cluster.SslOpts = SslOpts
+                }
 
 		By("setting a timeout")
 		cluster.Timeout = 60 * time.Second
@@ -116,7 +123,8 @@ var _ = Describe("Cassandra CRUD tests", func() {
 			var tableDrop = fmt.Sprintf("DROP TABLE IF EXISTS %s", tableName)
 			var updateData = fmt.Sprintf("UPDATE %s SET %s = '%s' WHERE %s = '%s'", tableName, col2, data3, col1, data1)
 			var deleteData = fmt.Sprintf("DELETE FROM %s WHERE %s = '%s'", tableName, col1, data1)
-			var showData = fmt.Sprintf("SELECT * FROM %s", tableName)
+			var showData = fmt.Sprintf("SELECT * FROM %s WHERE %s = '%s'", tableName, col1, data1)
+			var checkData = fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE %s = '%s'", tableName, col1, data1)
 
 			BeforeEach(func() {
 				By("creating a table")
@@ -166,13 +174,13 @@ var _ = Describe("Cassandra CRUD tests", func() {
 				By("deleting data")
 				err = session.Query(deleteData).Exec()
 				Expect(err).NotTo(HaveOccurred())
-				err = session.Query(showData).Exec()
+				err = session.Query(checkData).Exec()
 				Expect(err).NotTo(HaveOccurred())
-				iter := session.Query(showData).Iter()
+				iter := session.Query(checkData).Iter()
 				s, err := iter.SliceMap()
 				Expect(err).NotTo(HaveOccurred())
-				v := []map[string]interface{}{}
-				Expect(s).To(Equal(v))
+				v := s[0]["count"]
+                                Expect(v).To(Equal(int64(0)))
 			})
 		})
 	})

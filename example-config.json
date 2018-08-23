@@ -5,8 +5,8 @@
 	"cassandra_native_transport_port":  "9042",
 	"cassandra_seeds": ["127.0.0.1"],
 	"cassandra_servers": ["127.0.0.3","127.0.0.4"],
-	"client_encryption.enabled" : false,
-	"validate_ssl_TF": false,
+	"client_encryption.enabled": false,
+	"ca_cert_file": "/var/vcap/jobs/cassandra-acceptance-tests/tls/ca.crt",
 	"keyspace_replication_factor": 3,
 	"replication_strategy": "SimpleStrategy",
 	"durable_write": true
